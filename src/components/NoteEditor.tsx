@@ -1,9 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useNotes } from '@/context/NotesContext';
 import SyncStatusIndicator from './SyncStatusIndicator';
 import { Button } from '@/components/ui/button';
@@ -12,6 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Note } from '@/types';
 import { useDebounce } from '@/hooks/use-debounce';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+// Add remark-gfm dependency
+<lov-add-dependency>remark-gfm@4.0.1</lov-add-dependency>
+import remarkGfm from 'remark-gfm';
 
 const NoteEditor: React.FC = () => {
   const { notes, selectedNoteId, updateNoteContent, deleteSelectedNote } = useNotes();
@@ -103,7 +106,7 @@ const NoteEditor: React.FC = () => {
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  code({node, inline, className, children, ...props}) {
+                  code({node, className, children, ...props}) {
                     const match = /language-(\w+)/.exec(className || '');
                     return !inline && match ? (
                       <SyntaxHighlighter

@@ -1,8 +1,9 @@
-import Dexie, { Table } from 'dexie';
+
+import Dexie from 'dexie';
 import { Note } from '@/types';
 
 export class NotesDatabase extends Dexie {
-  notes!: Table<Note>;
+  notes!: Dexie.Table<Note, string>;
 
   constructor() {
     super('NotesDatabase');
