@@ -58,7 +58,11 @@ export const updateNoteSyncStatus = async (id: string, syncStatus: string): Prom
 };
 
 export const purgeDeletedNotes = async (): Promise<void> => {
-  const deletedNotes = await db.notes.where('isDeleted').equals(true).and(note => note.syncStatus === 'synced').toArray();
+  const deletedNotes = await db.notes
+    .where('isDeleted')
+    .equals(true)
+    .and(note => note.syncStatus === 'synced')
+    .toArray();
   
   if (deletedNotes.length > 0) {
     const ids = deletedNotes.map(note => note.id);
