@@ -12,9 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Note } from '@/types';
 import { useDebounce } from '@/hooks/use-debounce';
+import { WifiOff } from 'lucide-react';
 
 const NoteEditor: React.FC = () => {
-  const { notes, selectedNoteId, updateNoteContent, deleteSelectedNote } = useNotes();
+  const { notes, selectedNoteId, updateNoteContent, deleteSelectedNote, isOnline } = useNotes();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [activeTab, setActiveTab] = useState('edit');
@@ -73,7 +74,15 @@ const NoteEditor: React.FC = () => {
             placeholder="Note title"
             className="text-xl font-medium border-0 px-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
-          <SyncStatusIndicator status={note.syncStatus} />
+          <div className="flex items-center gap-2">
+            <SyncStatusIndicator status={note.syncStatus} />
+            {!isOnline && (
+              <div className="flex items-center text-amber-500 text-xs">
+                <WifiOff className="h-3 w-3 mr-1" />
+                <span>Offline</span>
+              </div>
+            )}
+          </div>
         </div>
         <Button variant="destructive" size="sm" onClick={handleDelete}>
           Delete

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Note, SyncStatus } from '@/types';
@@ -40,15 +39,27 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { toast } = useToast();
 
+  // Check for forced offline mode
+  const isForceOfflineMode = () => {
+    return localStorage.getItem('offlineMode') === 'true';
+  };
+
+  // Get actual online status
+  const getActualOnlineStatus = () => {
+    return isForceOfflineMode() ? false : navigator.onLine;
+  };
+
   // Monitor online status
   useEffect(() => {
     const handleOnline = () => {
-      setIsOnline(true);
-      toast({
-        title: "You're back online",
-        description: "Syncing your notes...",
-      });
-      syncAllNotes();
+      setIsOnline(getActualOnlineStatus());
+      if (!isForceOfflineMode()) {
+        toast({
+          title: "You're back online",
+          description: "Syncing your notes...",
+        });
+        syncAllNotes();
+      }
     };
     
     const handleOffline = () => {
@@ -60,12 +71,23 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
     };
 
+    // Update online status initially
+    setIsOnline(getActualOnlineStatus());
+
+    // Set up event listeners
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    // Listen for storage events (for offline mode changes in other tabs)
+    const handleStorageChange = () => {
+      setIsOnline(getActualOnlineStatus());
+    };
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -79,7 +101,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setNotes(localNotes);
         
         // If we're online and have no notes, try to fetch from API
-        if (isOnline && localNotes.length === 0) {
+        const actualOnlineStatus = getActualOnlineStatus();
+        if (actualOnlineStatus && localNotes.length === 0) {
           const apiNotes = await fetchAllNotes();
           
           // Save API notes to IndexedDB
@@ -93,7 +116,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
         
         // Try to sync any unsynced notes
-        if (isOnline) {
+        if (actualOnlineStatus) {
           const unsyncedNotes = await getUnsyncedNotes();
           if (unsyncedNotes.length > 0) {
             await syncAllNotes();
@@ -168,11 +191,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setNotes(prev => prev.map(note => note.id === id ? updatedNote : note));
     
     // Try to sync if online
-    if (isOnline) {
+    if (getActualOnlineStatus()) {
       // We don't await here to allow UI to remain responsive
       syncAllNotes();
     }
-  }, [notes, isOnline]);
+  }, [notes]);
 
   // Delete a note
   const deleteSelectedNote = async (id: string) => {
@@ -196,7 +219,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Sync all notes
   const syncAllNotes = async () => {
-    if (!isOnline) {
+    if (!getActualOnlineStatus()) {
       toast({
         title: "You're offline",
         description: "Notes will sync when you're back online.",
@@ -230,7 +253,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         notes,
         isLoading,
         selectedNoteId,
-        isOnline,
+        isOnline: getActualOnlineStatus(), // Use the actual status
         searchQuery,
         setSearchQuery,
         createNewNote,
