@@ -15,17 +15,19 @@ export class NotesDatabase extends Dexie {
 export const db = new NotesDatabase();
 
 export const getNotes = async (searchQuery?: string): Promise<Note[]> => {
-  let collection = db.notes.where('isDeleted').equals(undefined);
+  // Don't use equals(undefined) - filter after getting all notes instead
+  let notes = await db.notes.toArray();
+  notes = notes.filter(note => !note.isDeleted);
   
   if (searchQuery && searchQuery.trim() !== '') {
     const query = searchQuery.toLowerCase();
-    return (await collection.toArray()).filter(note =>
+    return notes.filter(note =>
       note.title.toLowerCase().includes(query) ||
       note.content.toLowerCase().includes(query)
     );
   }
   
-  return collection.toArray();
+  return notes;
 };
 
 export const getNoteById = async (id: string): Promise<Note | undefined> => {
