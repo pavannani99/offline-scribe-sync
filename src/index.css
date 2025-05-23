@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -98,4 +92,74 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Markdown styling */
+.markdown-preview {
+  @apply text-gray-900;
+}
+
+.markdown-preview h1 {
+  @apply text-3xl font-bold mt-6 mb-4;
+}
+
+.markdown-preview h2 {
+  @apply text-2xl font-bold mt-5 mb-3;
+}
+
+.markdown-preview h3 {
+  @apply text-xl font-bold mt-4 mb-2;
+}
+
+.markdown-preview h4 {
+  @apply text-lg font-bold mt-3 mb-2;
+}
+
+.markdown-preview p {
+  @apply my-3;
+}
+
+.markdown-preview a {
+  @apply text-blue-600 hover:underline;
+}
+
+.markdown-preview ul {
+  @apply list-disc pl-6 my-3;
+}
+
+.markdown-preview ol {
+  @apply list-decimal pl-6 my-3;
+}
+
+.markdown-preview blockquote {
+  @apply border-l-4 border-gray-200 pl-4 italic my-3;
+}
+
+.markdown-preview pre {
+  @apply rounded bg-gray-100 p-4 my-3 overflow-auto;
+}
+
+.markdown-preview code:not(pre code) {
+  @apply bg-gray-100 rounded px-1 py-0.5 text-sm;
+}
+
+.markdown-preview table {
+  @apply border-collapse my-3;
+}
+
+.markdown-preview th, 
+.markdown-preview td {
+  @apply border border-gray-300 px-3 py-1;
+}
+
+.markdown-preview th {
+  @apply bg-gray-100;
+}
+
+.markdown-preview img {
+  @apply max-w-full h-auto my-3;
+}
+
+.markdown-preview hr {
+  @apply my-4 border-t border-gray-300;
 }
