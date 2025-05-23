@@ -1,4 +1,3 @@
-
 import Dexie from 'dexie';
 import { Note } from '@/types';
 
@@ -58,10 +57,9 @@ export const updateNoteSyncStatus = async (id: string, syncStatus: string): Prom
 };
 
 export const purgeDeletedNotes = async (): Promise<void> => {
+  // Get all notes marked as deleted and successfully synced
   const deletedNotes = await db.notes
-    .where('isDeleted')
-    .equals(true)
-    .and(note => note.syncStatus === 'synced')
+    .filter(note => note.isDeleted === true && note.syncStatus === 'synced')
     .toArray();
   
   if (deletedNotes.length > 0) {

@@ -103,21 +103,21 @@ const NoteEditor: React.FC = () => {
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  code({node, inline = false, className, children, ...props}) {
+                  code({node, className, children, ...props}) {
                     const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
+                    return !className?.includes('language-') ? (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    ) : (
                       <SyntaxHighlighter
                         style={oneLight}
-                        language={match[1]}
+                        language={match ? match[1] : ''}
                         PreTag="div"
                         {...props}
                       >
                         {String(children).replace(/\n$/, '')}
                       </SyntaxHighlighter>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
                     );
                   }
                 }}
